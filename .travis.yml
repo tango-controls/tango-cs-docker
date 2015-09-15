@@ -13,7 +13,7 @@ before_install:
 
 before_script:
   - docker build -t mliszcz/tango-cs .
-  - CONTAINER=$(docker run -d -p 10000:10000 mliszcz/tango-cs)
+  - CONTAINER=$(docker run -d mliszcz/tango-cs)
   - IPADDR=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' $CONTAINER)
   - TANGO_HOST=${IPADDR}:10000
   - DEVICE="tango://${TANGO_HOST}/sys/database/2"

@@ -3,7 +3,7 @@
 Minimal Docker image with *TANGO control system*
 (http://www.tango-controls.org/).
 
-![Build Status](https://img.shields.io/travis/mliszcz/tango-cs-docker.svg)
+[![Build Status](https://img.shields.io/travis/mliszcz/tango-cs-docker.svg)](https://travis-ci.org/mliszcz/tango-cs-docker)
 
 ## Contents
 
