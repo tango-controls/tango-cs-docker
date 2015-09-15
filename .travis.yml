@@ -1,0 +1,23 @@
+sudo: required
+
+language: scala
+
+scala:
+  - 2.11.7
+
+services:
+  - docker
+
+before_install:
+  - wget http://sourceforge.net/projects/tango-cs/files/tools/TangORB-8.7.2.jar
+
+before_script:
+  - docker build -t mliszcz/tango-cs .
+  - CONTAINER=$(docker run -d -p 10000:10000 mliszcz/tango-cs)
+  - IPADDR=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' $CONTAINER)
+  - TANGO_HOST=${IPADDR}:10000
+  - DEVICE="tango://${TANGO_HOST}/sys/database/2"
+
+script:
+  - scala -cp TangORB-8.7.2.jar \
+    -e "new fr.esrf.TangoApi.DeviceProxy(\"$DEVICE\")"

@@ -28,11 +28,12 @@ RUN apt-get update && \
 
 RUN service mysql start && \
     apt-get update && \
-    apt-get install -y tango-db tango-test
+    apt-get install -y tango-db tango-accesscontrol tango-test
 
 EXPOSE 10000
 
 CMD service mysql start && \
     service tango-db start && \
     service tango-starter start && \
+    service tango-accesscontrol start && \
     /usr/lib/tango/TangoTest test
