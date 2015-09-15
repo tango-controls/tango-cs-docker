@@ -12,8 +12,9 @@ services:
   - docker
 
 before_install:
-  - sudo apt-get update && sudo apt-get install scala
   - wget http://sourceforge.net/projects/tango-cs/files/tools/TangORB-8.7.2.jar
+  - wget http://downloads.typesafe.com/scala/2.11.7/scala-2.11.7.tgz
+  - tar xf scala-2.11.7.tgz
 
 before_script:
   - docker build -t mliszcz/tango-cs .
@@ -24,5 +25,5 @@ before_script:
 
 script:
   - >
-    scala -cp TangORB-8.7.2.jar
+    ./scala-2.11.7/bin/scala -cp TangORB-8.7.2.jar
     -e "new fr.esrf.TangoApi.DeviceProxy(\"$DEVICE\")"
