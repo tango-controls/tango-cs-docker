@@ -1,14 +1,18 @@
 sudo: required
 
-language: scala
+language: java
 
-scala:
-  - 2.11.7
+jdk:
+  - oraclejdk8
+
+notifications:
+  email: false
 
 services:
   - docker
 
 before_install:
+  - sudo apt-get install scala
   - wget http://sourceforge.net/projects/tango-cs/files/tools/TangORB-8.7.2.jar
 
 before_script:
