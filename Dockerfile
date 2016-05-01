@@ -1,39 +1,39 @@
-# TANGO control system Dockerfile
+# TANGO Control System Dockerfile
 
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 MAINTAINER mliszcz <liszcz.michal@gmail.com>
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    DB_ROOT_PASSWORD=secret \
-    TANGO_ADMIN_PASSWORD=secret \
-    TANGO_APP_PASSWORD=
+RUN echo "deb [trusted=yes] http://mliszcz.github.io/tango-cs-build/repository/ apt/" >> /etc/apt/sources.list
 
-# http://askubuntu.com/questions/365911/why-the-services-do-not-start-at-installation
-RUN printf '#!/bin/sh\nexit 0\n' > /usr/sbin/policy-rc.d
+RUN apt-get update && apt-get install -y \
+  supervisor
 
-RUN apt-get update && \
-    apt-get install -y debconf-utils
+RUN apt-get update && apt-get install -y \
+  libmysqlclient20 \
+  libomniorb4-1 \
+  libzmq5 \
+  libcos4-1
 
-RUN printf "\
-  mysql-server mysql-server/root_password password ${DB_ROOT_PASSWORD}\n \
-  mysql-server mysql-server/root_password_again password ${DB_ROOT_PASSWORD}\n \
-  tango-common tango-common/tango-host string 127.0.0.1:10000\n \
-  tango-db tango-db/dbconfig-install boolean true\n \
-  tango-db tango-db/mysql/admin-pass password ${TANGO_ADMIN_PASSWORD}\n \
-  tango-db tango-db/mysql/app-pass password ${TANGO_APP_PASSWORD}" \
-    | debconf-set-selections
+RUN apt-get update && apt-get install -y \
+  libtango9 \
+  libtango9-dev \
+  tango9-tools \
+  tango9-db \
+  tango9-starter \
+  tango9-accesscontrol \
+  tango9-test
 
-RUN apt-get update && \
-    apt-get install -y  mysql-server
+ENV LD_LIBRARY_PATH=/usr/local/lib
 
-RUN service mysql start && \
-    apt-get update && \
-    apt-get install -y tango-db tango-accesscontrol tango-test
+ADD scripts/supervisord.conf /etc/supervisord.conf
+ADD scripts/tango_register_device /usr/local/bin/
+ADD scripts/wait-for-it.sh /usr/local/bin/
 
 EXPOSE 10000
 
-CMD service mysql start && \
-    service tango-db start && \
-    service tango-starter start && \
-    service tango-accesscontrol start && \
-    /usr/lib/tango/TangoTest test
+RUN useradd -ms /bin/bash tango
+
+USER tango
+
+CMD /usr/local/bin/wait-for-it.sh $MYSQL_HOST:3306 --timeout=10 --strict -- \
+  /usr/bin/supervisord -c /etc/supervisord.conf

@@ -12,18 +12,36 @@ services:
   - docker
 
 before_install:
-  - wget http://sourceforge.net/projects/tango-cs/files/tools/TangORB-8.7.2.jar
+  - wget http://downloads.sourceforge.net/project/tango-cs/tango-9.2.2.tar.gz
+  - tar xf tango-9.2.2.tar.gz
+  - mkdir -p dbinit/include
+  - cp tango-9.2.2/cppserver/database/create_db.sql.in dbinit/create_db.sql
+  - cp tango-9.2.2/cppserver/database/create_db_tables.sql.in dbinit/include/create_db_tables.sql
+  - cp tango-9.2.2/cppserver/database/stored_proc.sql.in dbinit/include/stored_proc.sql
+  - sed -i "s|@TANGO_DB_NAME@|tango_db|g" dbinit/create_db.sql
+  - sed -i "s|@TANGO_DB_NAME@|tango_db|g" dbinit/include/create_db_tables.sql
+  - sed -i "s|@TANGO_DB_NAME@|tango_db|g" dbinit/include/stored_proc.sql
+  - sed -i "s|^source create_db_tables.sql$|source /docker-entrypoint-initdb.d/include/create_db_tables.sql|g" dbinit/create_db.sql
+  - sed -i "s|^source stored_proc.sql$|source /docker-entrypoint-initdb.d/include/stored_proc.sql|g" dbinit/create_db.sql
+  - sed -i "/CREATE DATABASE tango_db;/d" dbinit/create_db.sql
+  - docker pull mysql:5.7
+  - >
+    docker run --name mysql_db
+    -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=tango_db -e MYSQL_USER=tango -e MYSQL_PASSWORD=tango
+    -v $PWD/dbinit:/docker-entrypoint-initdb.d:ro
+    -d mysql:5.7 --sql-mode=""
+  - wget http://sourceforge.net/projects/tango-cs/files/JTango/JTango-9.0.7/JTango-9.0.7.jar
   - wget http://downloads.typesafe.com/scala/2.11.7/scala-2.11.7.tgz
   - tar xf scala-2.11.7.tgz
 
 before_script:
-  - docker build -t mliszcz/tango-cs .
-  - CONTAINER=$(docker run -d mliszcz/tango-cs)
+  - docker build -t mliszcz/tango-cs:latest .
+  - CONTAINER=$(docker run -e TANGO_HOST=127.0.0.1:10000 -e MYSQL_HOST=mysql_db -e MYSQL_USER=tango -e MYSQL_PASSWORD=tango -e MYSQL_DATABASE=tango_db --link mysql_db:mysql_db -d mliszcz/tango-cs:latest)
   - IPADDR=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' $CONTAINER)
   - TANGO_HOST=${IPADDR}:10000
   - DEVICE="tango://${TANGO_HOST}/sys/database/2"
 
 script:
   - >
-    ./scala-2.11.7/bin/scala -cp TangORB-8.7.2.jar
+    ./scala-2.11.7/bin/scala -cp JTango-9.0.7.jar
     -e "new fr.esrf.TangoApi.DeviceProxy(\"$DEVICE\")"
