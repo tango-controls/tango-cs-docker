@@ -35,5 +35,5 @@ RUN useradd -ms /bin/bash tango
 
 USER tango
 
-CMD /usr/local/bin/wait-for-it.sh $MYSQL_HOST:3306 --timeout=10 --strict -- \
+CMD /usr/local/bin/wait-for-it.sh $MYSQL_HOST:3306 --timeout=30 --strict -- \
   /usr/bin/supervisord -c /etc/supervisord.conf
