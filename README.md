@@ -19,17 +19,18 @@ Following device servers are installed:
 
 ## Quick start
 
-First, you need working a instance of TANGO database.
-The, tell Docker to connect to that database:
+First, you need a working instance of TANGO database (with all relevant tables
+created). Then, tell Docker to connect to that database:
 
 ```bash
 docker run -it --rm --name tango_databaseds \
+  -e ORB_PORT=10000 \
   -e TANGO_HOST=127.0.0.1:10000 \
-  -e MYSQL_HOST=mysql_db -e MYSQL_USER=tango -e MYSQL_PASSWORD=tango -e MYSQL_DATABASE=tango_db \
+  -e MYSQL_HOST=mysql_db:3306 -e MYSQL_USER=tango -e MYSQL_PASSWORD=tango -e MYSQL_DATABASE=tango_db \
   mliszcz/tango-cs:latest
 ```
 
-Check the `.travis.yml` file to see how to set up a database in a Docker
+Check the `.travis.yml` file to see how to set up a database inside a Docker
 container.
 
 ## Acknowledgements
