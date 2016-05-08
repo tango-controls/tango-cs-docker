@@ -36,7 +36,7 @@ before_install:
 
 before_script:
   - docker build -t mliszcz/tango-cs:latest .
-  - CONTAINER=$(docker run -e TANGO_HOST=127.0.0.1:10000 -e MYSQL_HOST=mysql_db -e MYSQL_USER=tango -e MYSQL_PASSWORD=tango -e MYSQL_DATABASE=tango_db --link mysql_db:mysql_db -d mliszcz/tango-cs:latest)
+  - CONTAINER=$(docker run -e TANGO_HOST=127.0.0.1:10000 -e MYSQL_HOST=mysql_db:3306 -e MYSQL_USER=tango -e MYSQL_PASSWORD=tango -e MYSQL_DATABASE=tango_db --link mysql_db:mysql_db -d mliszcz/tango-cs:latest)
   - IPADDR=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' $CONTAINER)
   - TANGO_HOST=${IPADDR}:10000
   - DEVICE="tango://${TANGO_HOST}/sys/database/2"
