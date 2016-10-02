@@ -23,11 +23,11 @@ RUN yum -y install epel-release \
  && rpm -qa 'perl*' | xargs rpm -e --nodeps
 
 ENV ORB_PORT=10000
+ENV TANGO_HOST=127.0.0.1:${ORB_PORT}
 
-EXPOSE 10000
+EXPOSE ${ORB_PORT}
 
 RUN useradd -ms /bin/bash tango
-
 USER tango
 
 CMD /usr/local/bin/wait-for-it.sh $MYSQL_HOST --timeout=30 --strict -- \
