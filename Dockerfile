@@ -1,7 +1,7 @@
 # TANGO Control System Dockerfile
 
 FROM centos:7
-MAINTAINER mliszcz <liszcz.michal@gmail.com>
+MAINTAINER https://github.com/tango-controls/tango-cs-docker/graphs/contributors
 
 ADD resources/maxiv.repo /etc/yum.repos.d/
 ADD resources/supervisord.conf /etc/supervisord.conf
