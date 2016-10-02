@@ -1,39 +1,45 @@
-# tango-cs-docker
+[![Build Status](https://img.shields.io/travis/tango-controls/tango-cs-docker.svg)](https://travis-ci.org/tango-controls/tango-cs-docker)
 
-Minimal Docker image with *TANGO Control System*
-(http://www.tango-controls.org/).
+# Supported tags and respective `Dockerfile` links
 
-[![Build Status](https://img.shields.io/travis/mliszcz/tango-cs-docker.svg)](https://travis-ci.org/mliszcz/tango-cs-docker)
+* [`9`, `latest` (*Dockerfile*)](https://github.com/tango-controls/tango-cs-docker/blob/master/Dockerfile)
 
+# What is Tango Control System?
 
-## Contents
+> Tango Control System is a free open source device-oriented controls toolkit
+> for controlling any kind of hardware or software and building SCADA systems.
 
-The image is based on Ubuntu 16.04 and TANGO stack 9.2.2.
+For more information please visit [www.tango-controls.org](http://www.tango-controls.org).
 
-Following device servers are installed:
+![logo](http://www.tango-controls.org/static/tango/img/logo_tangocontrols.png)
+
+# How to use this image
+
+First, you need a working instance of TANGO database (with all relevant tables
+created). Then, tell Docker to connect to that database:
+
+```console
+docker run -it --rm --name tango_databaseds \
+  -e ORB_PORT=10000 \
+  -e TANGO_HOST=127.0.0.1:10000 \
+  -e MYSQL_HOST=mysql_db:3306 \
+  -e MYSQL_USER=tango \
+  -e MYSQL_PASSWORD=tango \
+  -e MYSQL_DATABASE=tango_db \
+  tangocs/tango:latest
+```
+
+Check the `.travis.yml` file to see how to set up a database inside a Docker
+container.
+
+Following device servers are installed and started by default:
 
 * DataBaseds
 * Starter
 * TangoAccessControl
 * TangoTest
 
-## Quick start
-
-First, you need a working instance of TANGO database (with all relevant tables
-created). Then, tell Docker to connect to that database:
-
-```bash
-docker run -it --rm --name tango_databaseds \
-  -e ORB_PORT=10000 \
-  -e TANGO_HOST=127.0.0.1:10000 \
-  -e MYSQL_HOST=mysql_db:3306 -e MYSQL_USER=tango -e MYSQL_PASSWORD=tango -e MYSQL_DATABASE=tango_db \
-  mliszcz/tango-cs:latest
-```
-
-Check the `.travis.yml` file to see how to set up a database inside a Docker
-container.
-
-## Acknowledgements
+# Acknowledgements
 
 * Thanks [vishnubob](https://github.com/vishnubob) for the `wait-for-it.sh`
   script;
