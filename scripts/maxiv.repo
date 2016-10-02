@@ -1,0 +1,5 @@
+[maxiv]
+name=MAX IV Public Repository for RHEL/CentOS $releasever - $basearch
+baseurl=http://pubrepo.maxiv.lu.se/rpm/el$releasever/$basearch/
+enabled=1
+gpgcheck=0

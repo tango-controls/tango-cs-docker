@@ -1,33 +1,26 @@
 # TANGO Control System Dockerfile
 
-FROM ubuntu:xenial
+FROM centos:7
 MAINTAINER mliszcz <liszcz.michal@gmail.com>
 
-RUN echo "deb [trusted=yes] http://mliszcz.github.io/tango-cs-build/repository/ apt/" >> /etc/apt/sources.list
-
-RUN apt-get update && apt-get install -y \
-    supervisor
-
-RUN apt-get update && apt-get install -y \
-    libmysqlclient20 \
-    libomniorb4-1 \
-    libzmq5 \
-    libcos4-1
-
-RUN apt-get update && apt-get install -y \
-    libtango9 \
-    libtango9-dev \
-    tango9-tools \
-    tango9-db \
-    tango9-starter \
-    tango9-accesscontrol \
-    tango9-test
-
-ENV LD_LIBRARY_PATH=/usr/local/lib
-
+ADD scripts/maxiv.repo /etc/yum.repos.d/
 ADD scripts/supervisord.conf /etc/supervisord.conf
 ADD scripts/tango_register_device /usr/local/bin/
 ADD scripts/wait-for-it.sh /usr/local/bin/
+
+RUN yum -y install epel-release \
+ && yum -y install supervisor zeromq \
+ && yum-config-manager --save --setopt=epel.includepkgs="zeromq libsodium openpgm" \
+ && yum -y install \
+    libtango9 \
+    tango-common \
+    tango-admin \
+    tango-starter \
+    tango-db \
+    tango-accesscontrol \
+    tango-test \
+ && rpm -e --nodeps mariadb mariadb-server \
+ && rpm -qa 'perl*' | xargs rpm -e --nodeps
 
 ENV ORB_PORT=10000
 
