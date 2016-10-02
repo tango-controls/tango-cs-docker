@@ -3,10 +3,10 @@
 FROM centos:7
 MAINTAINER mliszcz <liszcz.michal@gmail.com>
 
-ADD scripts/maxiv.repo /etc/yum.repos.d/
-ADD scripts/supervisord.conf /etc/supervisord.conf
-ADD scripts/tango_register_device /usr/local/bin/
-ADD scripts/wait-for-it.sh /usr/local/bin/
+ADD resources/maxiv.repo /etc/yum.repos.d/
+ADD resources/supervisord.conf /etc/supervisord.conf
+ADD resources/tango_register_device /usr/local/bin/
+ADD resources/wait-for-it.sh /usr/local/bin/
 
 RUN yum -y install epel-release \
  && yum -y install supervisor zeromq \
