@@ -1,27 +1,18 @@
 # TANGO Control System Dockerfile
 
-FROM centos:7
-MAINTAINER https://github.com/tango-controls/tango-cs-docker/graphs/contributors
+FROM debian:jessie
+MAINTAINER info@tango-controls.org
 
-ADD resources/maxiv.repo /etc/yum.repos.d/
-ADD resources/supervisord.conf /etc/supervisord.conf
-ADD resources/tango_register_device /usr/local/bin/
-ADD resources/wait-for-it.sh /usr/local/bin/
+RUN apt-get update && apt-get install -y supervisor omniidl libomniorb4-dev libcos4-dev libomnithread3-dev libzmq3-dev libmysqlclient-dev
 
-RUN yum -y install epel-release \
- && yum -y install supervisor zeromq \
- && yum-config-manager --save --setopt=epel.includepkgs="zeromq libsodium openpgm" \
- && yum -y install \
-    libtango9 \
-    tango-common \
-    tango-admin \
-    tango-starter \
-    tango-db \
-    tango-accesscontrol \
-    tango-test \
- && rpm -e --nodeps mariadb mariadb-server \
- && rpm -qa 'perl*' | xargs rpm -e --nodeps
+COPY build/bin/*                     /usr/bin/
+COPY resources/tango_register_device /usr/local/bin/
+COPY resources/wait-for-it.sh        /usr/local/bin/
+COPY resources/supervisord.conf      /etc/supervisord.conf
 
+COPY build/lib/* /usr/local/lib/
+
+ENV LD_LIBRARY_PATH=/usr/local/lib
 ENV ORB_PORT=10000
 ENV TANGO_HOST=127.0.0.1:${ORB_PORT}
 

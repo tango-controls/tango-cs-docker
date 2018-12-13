@@ -2,13 +2,14 @@ FROM debian:jessie
 
 MAINTAINER info@tango-controls.org
 
-#ARG=<tango lib ver>
+ARG TANGO_LIB_VER
 
-RUN apt-get update && apt-get install -y build-essential cmake autoconf libtool ant omniidl libomniorb4-dev libcos4-dev libomnithread3-dev libzmq3-dev
+ARG TANGO_SOURCE_DISTRIBUTION_VER
 
-RUN wget https://github.com/tango-controls/TangoSourceDistribution/releases/download/9.3.2-alpha.1/tango-9.3.2-alpha.1.tar.gz
+RUN apt-get update && apt-get install -y wget build-essential omniidl libomniorb4-dev libcos4-dev libomnithread3-dev libzmq3-dev mysql-client libmysqlclient-dev
 
-RUN tar zxvf tango-9.3.2-alpha.1.tar.gz
+RUN wget https://github.com/tango-controls/TangoSourceDistribution/releases/download/${TANGO_SOURCE_DISTRIBUTION_VER}/tango-${TANGO_SOURCE_DISTRIBUTION_VER}.tar.gz
 
-WORKDIR tango-9.3.2
+RUN tar zxvf tango-${TANGO_SOURCE_DISTRIBUTION_VER}.tar.gz
 
+WORKDIR tango-${TANGO_LIB_VER}
