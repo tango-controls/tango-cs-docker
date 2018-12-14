@@ -5,20 +5,18 @@ notifications:
 
 services:
   - docker
+  - mysql
 
 before_install:
   - source tango.properties
   - wget https://github.com/tango-controls/TangoSourceDistribution/releases/download/${TANGO_SOURCE_DISTRIBUTION_VER}/tango-${TANGO_SOURCE_DISTRIBUTION_VER}.tar.gz
   - mkdir build
   - tar xf tango-${TANGO_SOURCE_DISTRIBUTION_VER}.tar.gz -C build
-  - docker pull mysql:5.7
-  - docker run --name mysql --hostname mysql -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql:5.7
-  - MYSQL_HOST_IP=docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mysql
 
 before_script:
   - docker build -t tango-build -f .travis/Dockerfile .
   - docker run --name tango-build -v `pwd`/build:/build -w=/build/tango-${TANGO_LIB_VER} -dit tango-build
-  - docker exec tango-build ./configure --prefix=/build --disable-java --with-mysql-ho=${MYSQL_HOST_IP} --with-mysql-admin=root --with-mysql-admin-passwd=root
+  - docker exec tango-build ./configure --prefix=/build --disable-java --with-mysql-ho=127.0.0.1 --with-mysql-admin=root --with-mysql-admin-passwd=""
   - docker exec tango-build make && make install
 
 script:
