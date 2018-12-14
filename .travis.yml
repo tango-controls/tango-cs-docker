@@ -1,4 +1,4 @@
-language: java
+language: bash
 
 notifications:
   email: false
@@ -21,7 +21,7 @@ before_script:
   - docker exec tango-build make install
 
 script:
-  - docker -t tangocs/tango-cs build .
+  - docker build -t tangocs/tango-cs .
 
 after_script:
   - docker rm -f tango-build
