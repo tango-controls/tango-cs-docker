@@ -20,8 +20,16 @@ before_script:
   - docker exec tango-build make && make install
 
 script:
-  - docker build .
+  - docker -t tangocs/tango-cs build .
 
 after_script:
   - docker rm -f tango-build
   - docker rm -f mysql
+
+before_deploy:
+  - docker login -u ingvord -p "$REGISTRY_PASS"
+  - docker tag tangocs/tango-cs tangocs/tango-cs:${TRAVIS_BRANCH}
+
+deploy:
+  - provider: script
+    script: docker push tangocs/tango-cs:${TRAVIS_BRANCH}
