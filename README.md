@@ -37,7 +37,6 @@ Following device servers are installed and started by default:
 * DataBaseds
 * Starter
 * TangoAccessControl
-* TangoTest
 
 # Acknowledgements
 
