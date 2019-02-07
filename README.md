@@ -13,7 +13,7 @@ For more information please visit [www.tango-controls.org](http://www.tango-cont
 
 ![logo](http://www.tango-controls.org/static/tango/img/logo_tangocontrols.png)
 
-# How to use this image
+# How to use this image using docker
 
 First, you need a working instance of TANGO database (with all relevant tables
 created). Then, tell Docker to connect to that database:
@@ -37,6 +37,49 @@ Following device servers are installed and started by default:
 * DataBaseds
 * Starter
 * TangoAccessControl
+
+# How to use this image using docker-compose
+
+Create a docker-compose.yml file 
+
+**NOTE** the docker-compose provided below also includes TangoTest device
+
+**NOTE** please pay attention to docker-compose versioning - it depends on the docker engine version: [see docker docs](https://docs.docker.com/compose/compose-file/)
+
+```yaml
+version: '3.7'
+services:
+  tango-db:
+    image: tangocs/mysql:9.2.2
+    ports:
+     - "9999:3306"
+    environment:
+     - MYSQL_ROOT_PASSWORD=root
+  tango-cs:
+    image: tangocs/tango-cs:9.3.2-alpha.1-no-tango-test
+    ports:
+     - "10000:10000"
+    environment:
+     - TANGO_HOST=localhost:10000
+     - MYSQL_HOST=tango-db:3306
+     - MYSQL_USER=tango
+     - MYSQL_PASSWORD=tango
+     - MYSQL_DATABASE=tango
+    links:
+     - "tango-db:localhost"
+    depends_on:
+     - tango-db
+  tango-test:
+    image: tangocs/tango-test:latest
+    environment:
+     - TANGO_HOST=tango-cs:10000
+    links:
+     - "tango-cs:localhost"
+    depends_on:
+     - tango-cs
+```
+
+Run `docker-compose up`. Tango Controls System will be available through `localhost:10000`
 
 # Acknowledgements
 
