@@ -1,25 +1,23 @@
-# TANGO Control System Dockerfile
-
-FROM debian:stretch
+FROM tangocs/tango-libs:9.3.3-rc1
 MAINTAINER info@tango-controls.org
 
-RUN apt-get update && apt-get install -y supervisor omniidl libomniorb4-dev libcos4-dev libomnithread3-dev libzmq3-dev libmariadbclient-dev openjdk-8-jre-headless
+RUN DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \
+    && /usr/local/bin/wait-for-it.sh --host=$DOCKERHOST --port=3142 --timeout=3 --strict --quiet -- echo "Acquire::http::Proxy \"http://$DOCKERHOST:3142\";" > /etc/apt/apt.conf.d/30proxy \
+    && echo "Proxy detected on docker host - using for this build" || echo "No proxy detected on docker host" \
+    && runtimeDeps='supervisor' \
+    && mkdir -p /usr/share/man/man1 \
+    && DEBIAN_FRONTEND=noninteractive sudo apt-get update \
+    && DEBIAN_FRONTEND=noninteractive sudo apt-get -y install --no-install-recommends $runtimeDeps \
 
-COPY build/bin/*                     /usr/bin/
 COPY resources/tango_register_device /usr/local/bin/
-COPY resources/wait-for-it.sh        /usr/local/bin/
 COPY resources/supervisord.conf      /etc/supervisord.conf
 
-COPY build/lib/* /usr/local/lib/
 
 ENV LD_LIBRARY_PATH=/usr/local/lib
 ENV ORB_PORT=10000
 ENV TANGO_HOST=127.0.0.1:${ORB_PORT}
 
 EXPOSE ${ORB_PORT}
-
-RUN useradd -ms /bin/bash tango
-USER tango
 
 CMD /usr/local/bin/wait-for-it.sh $MYSQL_HOST --timeout=30 --strict -- \
     /usr/bin/supervisord -c /etc/supervisord.conf

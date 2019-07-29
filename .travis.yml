@@ -5,29 +5,9 @@ notifications:
 
 services:
   - docker
-  - mysql
-
-addons:
-  mariadb: '10.1'
-
-before_install:
-  - source tango.properties
-  - wget https://github.com/tango-controls/TangoSourceDistribution/releases/download/${TANGO_SOURCE_DISTRIBUTION_VER}/tango-${TANGO_SOURCE_DISTRIBUTION_VER}.tar.gz
-  - mkdir build
-  - tar xf tango-${TANGO_SOURCE_DISTRIBUTION_VER}.tar.gz -C build
-
-before_script:
-  - docker build -t tango-build -f .travis/Dockerfile .
-  - docker run --name tango-build -v `pwd`/build:/build -w=/build/tango-${TANGO_LIB_VER} -dit tango-build
-  - docker exec tango-build ./configure --prefix=/build --disable-java --with-mysqlclient-prefix=/usr
-  - docker exec tango-build make
-  - docker exec tango-build make install
 
 script:
   - docker build -t tangocs/tango-cs .
-
-after_script:
-  - docker rm -f tango-build
 
 before_deploy:
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
