@@ -1,9 +1,9 @@
 # TANGO Control System Dockerfile
 
-FROM debian:jessie
+FROM debian:stretch
 MAINTAINER info@tango-controls.org
 
-RUN apt-get update && apt-get install -y supervisor omniidl libomniorb4-dev libcos4-dev libomnithread3-dev libzmq3-dev libmysqlclient-dev
+RUN apt-get update && apt-get install -y supervisor omniidl libomniorb4-dev libcos4-dev libomnithread3-dev libzmq3-dev libmysqlclient-dev openjdk-8-jre-headless
 
 COPY build/bin/*                     /usr/bin/
 COPY resources/tango_register_device /usr/local/bin/
