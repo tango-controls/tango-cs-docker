@@ -1,3 +1,12 @@
 FROM debian:stretch
 
-RUN apt-get update && apt-get install -y build-essential omniidl libomniorb4-dev libcos4-dev libomnithread3-dev libzmq3-dev mysql-client default-libmysqlclient-dev
+#install cppzmq
+RUN apt-get update && apt-get install -y git build-essential cmake libzmq3-dev pkg-config
+
+RUN git clone -b v4.2.2 https://github.com/zeromq/cppzmq.git cppzmq
+
+RUN cmake -H/cppzmq -B/cppzmq/build
+
+RUN make -C /cppzmq/build install
+
+RUN apt-get update && apt-get install -y omniidl libomniorb4-dev libcos4-dev libomnithread3-dev mysql-client default-libmysqlclient-dev
