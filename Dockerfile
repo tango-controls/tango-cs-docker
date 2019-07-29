@@ -1,4 +1,5 @@
-FROM tangocs/tango-libs:9.3.3-rc1
+ARG TANGO_VER
+FROM tangocs/tango-libs:${TANGO_VER}
 MAINTAINER info@tango-controls.org
 
 RUN DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \

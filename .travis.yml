@@ -6,15 +6,22 @@ notifications:
 services:
   - docker
 
+env:
+  - TANGO_VER=9.3.3-rc1
+
 script:
-  - docker build -t tangocs/tango-cs .
+  - docker build --build-arg TANGO_VER=${TANGO_VER} -t tangocs/tango-cs .
 
 before_deploy:
   - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
-  - docker tag tangocs/tango-cs tangocs/tango-cs:${TRAVIS_BRANCH}
+  - docker tag tangocs/tango-cs tangocs/tango-cs:${TANGO_VER}
 
 deploy:
   - provider: script
-    script: docker push tangocs/tango-cs:${TRAVIS_BRANCH}
+    script: docker push tangocs/tango-cs:latest
     on:
-      tags: true
+      all_branches: true
+  - provider: script
+    script: docker push tangocs/tango-cs:${TANGO_VER}
+    on:
+      all_branches: true
