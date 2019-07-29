@@ -7,6 +7,9 @@ services:
   - docker
   - mysql
 
+addons:
+  mariadb: '10.1'
+
 before_install:
   - source tango.properties
   - wget https://github.com/tango-controls/TangoSourceDistribution/releases/download/${TANGO_SOURCE_DISTRIBUTION_VER}/tango-${TANGO_SOURCE_DISTRIBUTION_VER}.tar.gz
