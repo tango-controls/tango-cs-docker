@@ -19,5 +19,12 @@ ENV TANGO_HOST=127.0.0.1:${ORB_PORT}
 
 EXPOSE ${ORB_PORT}
 
+RUN useradd --create-home --home-dir /home/tango tango
+
+RUN echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango \
+    && chmod 0440 /etc/sudoers.d/tango
+
+USER tango
+
 CMD /usr/local/bin/wait-for-it.sh $MYSQL_HOST --timeout=30 --strict -- \
     /usr/bin/supervisord -c /etc/supervisord.conf
