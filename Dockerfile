@@ -7,7 +7,7 @@ RUN DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" subs
     && runtimeDeps='supervisor' \
     && mkdir -p /usr/share/man/man1 \
     && DEBIAN_FRONTEND=noninteractive sudo apt-get update \
-    && DEBIAN_FRONTEND=noninteractive sudo apt-get -y install --no-install-recommends $runtimeDeps \
+    && DEBIAN_FRONTEND=noninteractive sudo apt-get -y install --no-install-recommends $runtimeDeps
 
 COPY resources/tango_register_device /usr/local/bin/
 COPY resources/supervisord.conf      /etc/supervisord.conf
