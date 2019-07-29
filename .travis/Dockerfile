@@ -9,4 +9,5 @@ RUN cmake -H/cppzmq -B/cppzmq/build  -DCMAKE_INSTALL_PREFIX=/usr
 
 RUN make -C /cppzmq/build install
 
-RUN apt-get update && apt-get install -y omniidl libomniorb4-dev libcos4-dev libomnithread3-dev mariadb-client libmariadbclient-dev
+RUN apt-get update \
+    && apt-get install -y omniidl libomniorb4-dev libcos4-dev libomnithread3-dev mariadb-client libmariadbclient-dev libmariadbclient-dev-compat

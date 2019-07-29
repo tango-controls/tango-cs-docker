@@ -19,7 +19,7 @@ before_install:
 before_script:
   - docker build -t tango-build -f .travis/Dockerfile .
   - docker run --name tango-build -v `pwd`/build:/build -w=/build/tango-${TANGO_LIB_VER} -dit tango-build
-  - docker exec tango-build ./configure --prefix=/build --disable-java --with-mysql-ho=127.0.0.1 --with-mysql-admin=root --with-mysql-admin-passwd=""
+  - docker exec tango-build ./configure --prefix=/build --disable-java --with-mysqlclient-prefix=/usr
   - docker exec tango-build make
   - docker exec tango-build make install
 
