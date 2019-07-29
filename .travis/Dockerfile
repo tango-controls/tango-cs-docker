@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y git build-essential cmake libzmq3-dev p
 
 RUN git clone -b v4.2.2 https://github.com/zeromq/cppzmq.git cppzmq
 
-RUN cmake -H/cppzmq -B/cppzmq/build
+RUN cmake -H/cppzmq -B/cppzmq/build  -DCMAKE_INSTALL_PREFIX=/usr
 
 RUN make -C /cppzmq/build install
 
