@@ -1,17 +1,17 @@
-ARG TANGO_VER
+ARG TANGO_VER=9.3.3-rc1
 FROM tangocs/tango-libs:${TANGO_VER}
 MAINTAINER info@tango-controls.org
 
-RUN DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \
-    && /usr/local/bin/wait-for-it.sh --host=$DOCKERHOST --port=3142 --timeout=3 --strict --quiet -- echo "Acquire::http::Proxy \"http://$DOCKERHOST:3142\";" > /etc/apt/apt.conf.d/30proxy \
-    && echo "Proxy detected on docker host - using for this build" || echo "No proxy detected on docker host" \
-    && runtimeDeps='supervisor' \
-    && mkdir -p /usr/share/man/man1 \
-    && DEBIAN_FRONTEND=noninteractive sudo apt-get update \
-    && DEBIAN_FRONTEND=noninteractive sudo apt-get -y install --no-install-recommends $runtimeDeps
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends supervisor
 
 COPY resources/tango_register_device /usr/local/bin/
+#ensure include conf.d
 COPY resources/supervisord.conf      /etc/supervisord.conf
+#copy tango cs conf
+COPY resources/tango-db.conf      /etc/supervisor/conf.d
+COPY resources/tango-starter.conf /etc/supervisor/conf.d
+COPY resources/tango-access-control.conf /etc/supervisor/conf.d
 
 
 ENV LD_LIBRARY_PATH=/usr/local/lib
@@ -27,5 +27,5 @@ RUN echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango \
 
 USER tango
 
-CMD /usr/local/bin/wait-for-it.sh $MYSQL_HOST --timeout=30 --strict -- \
+ENTRYPOINT /usr/local/bin/wait-for-it.sh $MYSQL_HOST --timeout=30 --strict -- \
     /usr/bin/supervisord -c /etc/supervisord.conf

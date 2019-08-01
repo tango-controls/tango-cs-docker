@@ -17,10 +17,12 @@ before_deploy:
   - docker tag tangocs/tango-cs tangocs/tango-cs:${TANGO_VER}
 
 deploy:
+  #TODO change to branch: master after merge
   - provider: script
     script: docker push tangocs/tango-cs:latest
     on:
       all_branches: true
+  # docker tag is basically TangoSourceDistribution release version
   - provider: script
     script: docker push tangocs/tango-cs:${TANGO_VER}
     on:
